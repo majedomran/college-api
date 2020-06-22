@@ -57,12 +57,14 @@ data = {
 }
 url = 'https://edugate.ksu.edu.sa/ksu/init'
 
-@app.route('/')
+@app.route('/',methods = ['POST'])
 def index():
     s = requests.session()
     r = s.get(url)
     soup = BeautifulSoup(r.content, 'html5lib')
     data['com.sun.faces.VIEW'] = soup.find('input', attrs={'name': 'com.sun.faces.VIEW'})['value']
+    data['loginForm:username'] = request.form['loginForm:username']
+    data['loginForm:password'] = request.form['loginForm:password']
 
     r = s.post(url, data=data)
     page = s.get('https://edugate.ksu.edu.sa/ksu/ui/student/student_transcript/index/studentTranscriptAllIndex.faces')
