@@ -64,14 +64,14 @@ def extractData(soup,index):
             column_marker += 1
     return bodyDict
     print(bodyDict)
-def loginAuth():
+def loginAuth(username,password):
     s = requests.session()
     r = s.get(url)
     soup = BeautifulSoup(r.content, 'html5lib')
     data['com.sun.faces.VIEW'] = soup.find(
         'input', attrs={'name': 'com.sun.faces.VIEW'})['value']
-    data['loginForm:username'] = request.form['loginForm:username']
-    data['loginForm:password'] = request.form['loginForm:password']
+    data['loginForm:username'] = username
+    data['loginForm:password'] = password
     r = s.post(url, data=data)
     page = s.get(
         'https://edugate.ksu.edu.sa/ksu/ui/student/student_transcript/index/studentTranscriptAllIndex.faces')
@@ -87,7 +87,7 @@ def index():
     # delta 8
     
     bodyDict = {}
-    soup = loginAuth()
+    soup = loginAuth(request.form['loginForm:username'],request.form['loginForm:password'])
     tables = soup.findAll('table')
     # bodyDict[extractYear(soup,28)] = extractData(soup,31)
     # print(extractYear(soup,28))
