@@ -103,7 +103,7 @@ def index():
     r = s.post(url, data=data,headers=headers)
     page = s.get(
         'https://edugate.ksu.edu.sa/ksu/ui/student/student_transcript/index/studentTranscriptAllIndex.faces')
-    soup = BeautifulSoup(page.content, 'html5lib')
+    # soup = BeautifulSoup(page.content, 'html5lib')
     # 28 31 start here
     # 39
     # 47
@@ -111,15 +111,15 @@ def index():
     # 63
     # delta 8
     
-    bodyDict = {}
+    # bodyDict = {}
     # soup = loginAuth(request.form['loginForm:username'],request.form['loginForm:password'])
-    tables = soup.findAll('table')
+    # tables = soup.findAll('table')
     # bodyDict[extractYear(soup,28)] = extractData(soup,31)
     # print(extractYear(soup,28))
-    i = 28 
-    while i < len(tables) - 2:
-        bodyDict[extractYear(soup,i)] = extractData(soup,i+3)
-        i = i + 8 
+    # i = 28 
+    # while i < len(tables) - 2:
+    #     bodyDict[extractYear(soup,i)] = extractData(soup,i+3)
+    #     i = i + 8 
         # print(i )
         # print('////')
     
