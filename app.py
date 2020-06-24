@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 import requests
 from bs4 import BeautifulSoup
 import html5lib
-import pandas as pd
+# import pandas as pd
 
 app = Flask(__name__)
 app.debug = True
