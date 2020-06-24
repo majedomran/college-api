@@ -116,7 +116,7 @@ def index():
     
     
   
-    return r.text
+    return page.text
 
 
 
