@@ -103,7 +103,7 @@ def index():
     # data['loginForm:username'] = request.form['loginForm:username']
     # data['loginForm:password'] = request.form['loginForm:password']
 
-    r = s.post(url, data=data,headers=headers)
+    r = s.post(url, data=data)
     page = s.get('https://edugate.ksu.edu.sa/ksu/ui/student/student_transcript/index/studentTranscriptAllIndex.faces')
     
     
