@@ -31,6 +31,21 @@ data = {
     'loginForm': 'loginForm',
     'loginForm:_idcl': 'loginForm:loginUsersLink'
 }
+headers = {
+    'Connection': 'keep-alive',
+    'Cache-Control': 'max-age=0',
+    'Upgrade-Insecure-Requests': '1',
+    'Origin': 'https://edugate.ksu.edu.sa',
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'Sec-Fetch-Site': 'same-origin',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-User': '?1',
+    'Sec-Fetch-Dest': 'document',
+    'Referer': 'https://edugate.ksu.edu.sa/ksu/ui/home.faces',
+    'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8,ar;q=0.7',
+}
 body = []
 url = 'https://edugate.ksu.edu.sa/ksu/init'
 
@@ -63,21 +78,32 @@ def extractData(soup,index):
             column_marker += 1
     return bodyDict
     print(bodyDict)
-def loginAuth(username,password):
+# def loginAuth(username,password):
+#     s = requests.session()
+#     r = s.get('https://edugate.ksu.edu.sa/ksu/init')
+#     soup = BeautifulSoup(r.content, 'html5lib')
+#     data['com.sun.faces.VIEW'] = soup.find(
+#         'input', attrs={'name': 'com.sun.faces.VIEW'})['value']
+#     data['loginForm:username'] = username
+#     data['loginForm:password'] = password
+#     r = s.post(url, data=data,headers=headers)
+#     page = s.get(
+#         'https://edugate.ksu.edu.sa/ksu/ui/student/student_transcript/index/studentTranscriptAllIndex.faces')
+#     soup = BeautifulSoup(page.content, 'html5lib')
+#     return soup
+@app.route('/', methods=['POST'])
+def index():
     s = requests.session()
     r = s.get('https://edugate.ksu.edu.sa/ksu/init')
     soup = BeautifulSoup(r.content, 'html5lib')
     data['com.sun.faces.VIEW'] = soup.find(
         'input', attrs={'name': 'com.sun.faces.VIEW'})['value']
-    data['loginForm:username'] = username
-    data['loginForm:password'] = password
-    r = s.post(url, data=data)
+    data['loginForm:username'] = request.form['loginForm:username']
+    data['loginForm:password'] = request.form['loginForm:password']
+    r = s.post(url, data=data,headers=headers)
     page = s.get(
         'https://edugate.ksu.edu.sa/ksu/ui/student/student_transcript/index/studentTranscriptAllIndex.faces')
     soup = BeautifulSoup(page.content, 'html5lib')
-    return soup
-@app.route('/', methods=['POST'])
-def index():
     # 28 31 start here
     # 39
     # 47
@@ -86,7 +112,7 @@ def index():
     # delta 8
     
     bodyDict = {}
-    soup = loginAuth(request.form['loginForm:username'],request.form['loginForm:password'])
+    # soup = loginAuth(request.form['loginForm:username'],request.form['loginForm:password'])
     tables = soup.findAll('table')
     # bodyDict[extractYear(soup,28)] = extractData(soup,31)
     # print(extractYear(soup,28))
@@ -94,11 +120,11 @@ def index():
     while i < len(tables) - 2:
         bodyDict[extractYear(soup,i)] = extractData(soup,i+3)
         i = i + 8 
-        print(i )
-        print('////')
+        # print(i )
+        # print('////')
     
     
-    print(bodyDict)
+    # print(bodyDict)
 
     # print(extractYear(soup,60))
     # print(extractData(soup,63))
