@@ -133,7 +133,7 @@ def index():
     
     
   
-    return bodyDict
+    return page.text
 
 
 
