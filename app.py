@@ -79,27 +79,18 @@ def loginAuth(username,password):
     return soup
 @app.route('/', methods=['POST'])
 def index():
-    # 28 31 start here
-    # 39
-    # 47
-    # 55
-    # 63
-    # delta 8
-    
-    bodyDict = {}
-    soup = loginAuth(request.form['loginForm:username'],request.form['loginForm:password'])
-    tables = soup.findAll('table')
-    # bodyDict[extractYear(soup,28)] = extractData(soup,31)
-    # print(extractYear(soup,28))
-    i = 28 
-    while i < len(tables) - 2:
-        bodyDict[extractYear(soup,i)] = extractData(soup,i+3)
-        i = i + 8 
-        print(i )
-        print('////')
+    s = requests.session()
+    r = s.get(url)
+    soup = BeautifulSoup(r.content, 'html5lib')
+    data['com.sun.faces.VIEW'] = soup.find('input', attrs={'name': 'com.sun.faces.VIEW'})['value']
+    data['loginForm:username'] = request.form['loginForm:username']
+    data['loginForm:password'] = request.form['loginForm:password']
+
+    r = s.post(url, data=data)
+    page = s.get('https://edugate.ksu.edu.sa/ksu/ui/student/student_transcript/index/studentTranscriptAllIndex.faces')
     
     
-    print(bodyDict)
+    # print(bodyDict)
 
     # print(extractYear(soup,60))
     # print(extractData(soup,63))
@@ -108,7 +99,7 @@ def index():
     
     
   
-    return bodyDict
+    return page.text
 
 
 
