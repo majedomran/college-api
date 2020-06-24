@@ -6,7 +6,7 @@ import html5lib
 # import pandas as pd
 
 app = Flask(__name__)
-
+# app.debug = True
 
 @app.route('/post/', methods=['POST'])
 def post_something():
@@ -117,14 +117,19 @@ def index():
     # bodyDict[extractYear(soup,28)] = extractData(soup,31)
     # print(extractYear(soup,28))
     i = 28 
-    while i < len(tables) - 2:
-        bodyDict[extractYear(soup,i)] = extractData(soup,i+3)
+    term = 0
+    while i < len(tables) - 6:
+        bodyDict['term'+str(term)] = {extractYear(soup,i): extractData(soup,i+3)}
+        # bodyDict[extractYear(soup,i)] =
+        print(extractYear(soup,i))
+        print(i)
+        print(extractData(soup,i+3))
         i = i + 8 
+        term = term +1
         # print(i )
         # print('////')
     
     
-    # print(bodyDict)
 
     # print(extractYear(soup,60))
     # print(extractData(soup,63))
@@ -132,6 +137,7 @@ def index():
     
     
     
+    print(bodyDict)
   
     return bodyDict
 
