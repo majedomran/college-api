@@ -6,7 +6,7 @@ import html5lib
 # import pandas as pd
 
 app = Flask(__name__)
-# app.debug = True
+app.debug = True
 
 @app.route('/post/', methods=['POST'])
 def post_something():
@@ -118,6 +118,9 @@ def index():
     tables = soup.findAll('table')
     # bodyDict[extractYear(soup,28)] = extractData(soup,31)
     # print(extractYear(soup,28))
+    
+    
+
     i = 28 
     term = 0
     while i < len(tables) - 6:
@@ -130,8 +133,13 @@ def index():
         term = term +1
         # print(i )
         # print('////')
-    
-    
+    i = 0
+    finalDict = {}
+    finalDict['data'] = bodyDict
+    if page.status_code == 200:
+        finalDict['login'] = 'true'
+    else:
+        finalDict['login'] = 'false'    
 
     # print(extractYear(soup,60))
     # print(extractData(soup,63))
@@ -141,7 +149,7 @@ def index():
     
     print(bodyDict)
   
-    return bodyDict
+    return finalDict
 
 
 
