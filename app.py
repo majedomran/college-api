@@ -104,6 +104,8 @@ def index():
     page = s.get(
         'https://edugate.ksu.edu.sa/ksu/ui/student/student_transcript/index/studentTranscriptAllIndex.faces')
     soup = BeautifulSoup(page.content, 'html5lib')
+    print(request.form['loginForm:username'])
+    print(request.form['loginForm:password'])
     # 28 31 start here
     # 39
     # 47
