@@ -77,7 +77,24 @@ def extractData(soup,index):
                 bodyDict['course'+str(coursIndex - 2)]['grade'] = column.get_text()
             column_marker += 1
     return bodyDict
-    print(bodyDict)
+    # print(bodyDict)
+def extractName(page):
+    soup = BeautifulSoup(page.content,'html5lib')
+    tables = soup.findAll('table')[19]
+    tableData = str(tables).split('td')[3]
+    tableData = str(tableData).split('studNameText')[1]
+    tableData = str(tableData).split('>')[1]
+    tableData = str(tableData).split('<')[0]
+    # soup = soup.find('td')
+    return tableData
+def extractMajor(page):
+    soup = BeautifulSoup(page.content,'html5lib')
+    tables = soup.findAll('table')[19]
+    tableData = str(tables).split('td')[9]
+    tableData = str(tableData).split('facNameText')[1]
+    tableData = str(tableData).split('>')[1]
+    tableData = str(tableData).split('<')[0]
+    return tableData
 # def loginAuth(username,password):
 #     s = requests.session()
 #     r = s.get('https://edugate.ksu.edu.sa/ksu/init')
@@ -106,6 +123,7 @@ def index():
     soup = BeautifulSoup(page.content, 'html5lib')
     print(request.form['loginForm:username'])
     print(request.form['loginForm:password'])
+    # print(s.get('https://edugate.ksu.edu.sa/ksu/ui/student/homeIndex.faces').text)
     # 28 31 start here
     # 39
     # 47
@@ -126,9 +144,9 @@ def index():
     while i < len(tables) - 6:
         bodyDict['term'+str(term)] = {extractYear(soup,i): extractData(soup,i+3)}
         # bodyDict[extractYear(soup,i)] =
-        print(extractYear(soup,i))
-        print(i)
-        print(extractData(soup,i+3))
+        # print(extractYear(soup,i))
+        # print(i)
+        # print(extractData(soup,i+3))
         i = i + 8 
         term = term +1
         # print(i )
@@ -136,18 +154,21 @@ def index():
     i = 0
     finalDict = {}
     finalDict['data'] = bodyDict
-    if page.status_code == 200:
+    finalDict['name'] = extractName(s.get('https://edugate.ksu.edu.sa/ksu/ui/student/homeIndex.faces'))
+    finalDict['major'] = extractMajor(s.get('https://edugate.ksu.edu.sa/ksu/ui/student/homeIndex.faces'))
+    # print(finalDict['data'])
+    if finalDict['data']:
         finalDict['login'] = 'true'
     else:
         finalDict['login'] = 'false'    
-
+    
     # print(extractYear(soup,60))
     # print(extractData(soup,63))
     
     
     
     
-    print(bodyDict)
+    # print(finalDict)
   
     return finalDict
 
