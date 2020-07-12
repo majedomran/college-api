@@ -87,7 +87,7 @@ def extractName(page):
     tableData = str(tableData).split('<')[0]
     # soup = soup.find('td')
     return tableData
-def extractMajor(page):
+def extractCollege(page):
     soup = BeautifulSoup(page.content,'html5lib')
     tables = soup.findAll('table')[19]
     tableData = str(tables).split('td')[9]
@@ -95,19 +95,51 @@ def extractMajor(page):
     tableData = str(tableData).split('>')[1]
     tableData = str(tableData).split('<')[0]
     return tableData
-# def loginAuth(username,password):
-#     s = requests.session()
-#     r = s.get('https://edugate.ksu.edu.sa/ksu/init')
-#     soup = BeautifulSoup(r.content, 'html5lib')
-#     data['com.sun.faces.VIEW'] = soup.find(
-#         'input', attrs={'name': 'com.sun.faces.VIEW'})['value']
-#     data['loginForm:username'] = username
-#     data['loginForm:password'] = password
-#     r = s.post(url, data=data,headers=headers)
-#     page = s.get(
-#         'https://edugate.ksu.edu.sa/ksu/ui/student/student_transcript/index/studentTranscriptAllIndex.faces')
-#     soup = BeautifulSoup(page.content, 'html5lib')
-#     return soup
+def extractMajor(page):
+    soup = BeautifulSoup(page.content,'html5lib')
+    tables = soup.findAll('table')[19]
+    tableData = str(tables).split('td')[19]
+    tableData = str(tableData).split('majorName')[1]
+    tableData = str(tableData).split('>')[1]
+    tableData = str(tableData).split('<')[0]
+    return tableData
+def extractStuNumber(page):
+    soup = BeautifulSoup(page.content,'html5lib')
+    tables = soup.findAll('table')[19]
+    tableData = str(tables).split('td')[13]
+    tableData = str(tableData).split('studNo')[1]
+    tableData = str(tableData).split('>')[1]
+    tableData = str(tableData).split('<')[0]
+    return tableData
+def extractCurrentTerm(page):
+    soup = BeautifulSoup(page.content,'html5lib') 
+    tables = soup.findAll('form')[2]
+    tableData = str(tables).split('<li>')[2]
+    tableData = str(tableData).split('</li>')[0]
+    currentTerm = str(tableData).split(' ')[17] + ' '+ str(tableData).split(' ')[18] +' '+str(tableData).split(' ')[19]
+    return currentTerm
+def extractMail(page):
+    soup = BeautifulSoup(page.content,'html5lib') 
+    tables = soup.findAll('form')[2]
+    tableData = str(tables).split('<li>')[6]
+    tableData = str(tableData).split('</li>')[0]
+    current = str(tableData).split(' ')[17]
+    return current
+def extractWarnings(page):
+    soup = BeautifulSoup(page.content,'html5lib') 
+    tables = soup.findAll('form')[2]
+    tableData = str(tables).split('<li>')[5]
+    tableData = str(tableData).split('</li>')[0]
+    current = str(tableData).split(' ')[17]
+    current = str(current).split('\n')[0]
+    return current
+def extractCurrrentGDP(page):
+    soup = BeautifulSoup(page.content,'html5lib') 
+    tables = soup.findAll('form')[2]
+    tableData = str(tables).split('<li>')[4]
+    tableData = str(tableData).split('</li>')[0]
+    current = str(tableData).split(' ')[17]
+    return current
 @app.route('/', methods=['POST'])
 def index():
     s = requests.session()
@@ -123,49 +155,33 @@ def index():
     soup = BeautifulSoup(page.content, 'html5lib')
     print(request.form['loginForm:username'])
     print(request.form['loginForm:password'])
-    # print(s.get('https://edugate.ksu.edu.sa/ksu/ui/student/homeIndex.faces').text)
-    # 28 31 start here
-    # 39
-    # 47
-    # 55
-    # 63
-    # delta 8
     
     bodyDict = {}
-    # soup = loginAuth(request.form['loginForm:username'],request.form['loginForm:password'])
     tables = soup.findAll('table')
-    # bodyDict[extractYear(soup,28)] = extractData(soup,31)
-    # print(extractYear(soup,28))
     
-    
-
+    personlPage = s.get('https://edugate.ksu.edu.sa/ksu/ui/student/homeIndex.faces')
     i = 28 
     term = 0
     while i < len(tables) - 6:
         bodyDict['term'+str(term)] = {extractYear(soup,i): extractData(soup,i+3)}
-        # bodyDict[extractYear(soup,i)] =
-        # print(extractYear(soup,i))
-        # print(i)
-        # print(extractData(soup,i+3))
         i = i + 8 
         term = term +1
-        # print(i )
-        # print('////')
     i = 0
     finalDict = {}
     finalDict['data'] = bodyDict
     finalDict['name'] = extractName(s.get('https://edugate.ksu.edu.sa/ksu/ui/student/homeIndex.faces'))
-    finalDict['major'] = extractMajor(s.get('https://edugate.ksu.edu.sa/ksu/ui/student/homeIndex.faces'))
+    finalDict['college'] = extractCollege(personlPage)
+    finalDict['major'] = extractMajor(personlPage)
+    finalDict['stdNumber'] = extractStuNumber(personlPage)
+    finalDict['currentTerm'] = extractCurrentTerm(personlPage)
+    finalDict['warnings'] = extractWarnings(personlPage)
+    finalDict['email'] = extractMail(personlPage)
+    finalDict['gdp'] = extractCurrrentGDP(personlPage)
     # print(finalDict['data'])
     if finalDict['data']:
         finalDict['login'] = 'true'
     else:
         finalDict['login'] = 'false'    
-    
-    # print(extractYear(soup,60))
-    # print(extractData(soup,63))
-    
-    
     
     
     # print(finalDict)
