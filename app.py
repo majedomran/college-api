@@ -31,6 +31,11 @@ data = {
     'loginForm': 'loginForm',
     'loginForm:_idcl': 'loginForm:loginUsersLink'
 }
+dataForCourses = {
+    'com.sun.faces.VIEW':'',
+    'myForm': 'myForm',
+    'myForm:_idcl': 'myForm:allPlanActionListener'
+}
 headers = {
     'Connection': 'keep-alive',
     'Cache-Control': 'max-age=0',
@@ -45,6 +50,24 @@ headers = {
     'Sec-Fetch-Dest': 'document',
     'Referer': 'https://edugate.ksu.edu.sa/ksu/ui/home.faces',
     'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8,ar;q=0.7',
+}
+headersForCourses = {
+'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+'Accept-Encoding': 'gzip, deflate, br',
+'Accept-Language': 'en-GB,en-US;q=0.9,en;q=0.8,ar;q=0.7',
+'Cache-Control': 'max-age=0',
+'Connection': 'keep-alive',
+'Content-Length': '98',
+'Content-Type': 'application/x-www-form-urlencoded',
+# 'Cookie': '_ga=GA1.3.986423461.1577646707; skinValue=1; langId=1; userType=1; BIGipServer~V40~EDUGATE-WEV-SRV-FARM-POOL=rd40o00000000000000000000ffff0abe3c35o80; JSESSIONID=EDRIEXdqan-JmAcdDj2TQdUVCinOOea_gYA_2JsCiSEiYKZTbo14!1211147327',
+'Host': 'edugate.ksu.edu.sa',
+'Origin': 'https://edugate.ksu.edu.sa',
+'Referer': 'https://edugate.ksu.edu.sa/ksu/ui/student/student_plan',
+'Sec-Fetch-Dest': 'document',
+'Sec-Fetch-Mode': 'navigate',
+'Sec-Fetch-Site': 'same-origin',
+'Sec-Fetch-User': '?1',
+'Upgrade-Insecure-Requests': '1',
 }
 body = []
 url = 'https://edugate.ksu.edu.sa/ksu/init'
@@ -143,8 +166,8 @@ def extractCurrrentGDP(page):
 @app.route('/', methods=['POST'])
 def index():
     s = requests.session()
-    r = s.get('https://edugate.ksu.edu.sa/ksu/init')
-    soup = BeautifulSoup(r.content, 'html5lib')
+    r1 = s.get('https://edugate.ksu.edu.sa/ksu/init')
+    soup = BeautifulSoup(r1.content, 'html5lib')
     data['com.sun.faces.VIEW'] = soup.find(
         'input', attrs={'name': 'com.sun.faces.VIEW'})['value']
     data['loginForm:username'] = request.form['loginForm:username']
@@ -185,8 +208,33 @@ def index():
     
     
     # print(finalDict)
-  
-    return finalDict
+    ##################
+    r = s.get('https://edugate.ksu.edu.sa/ksu/ui/student/student_transcript/index/studentTranscriptAllIndex.faces')
+    # soup = BeautifulSoup(r.content, 'html5lib')
+    # dataForCourses['com.sun.faces.VIEW'] = soup.find('input', attrs={'name': 'com.sun.faces.VIEW'})['value']
+    # print(soup.find('input', attrs={'name': 'com.sun.faces.VIEW'})['value'])
+    # r = s.post('https://edugate.ksu.edu.sa/ksu/ui/student/student_transcript/index/studentTranscriptAllIndex.faces',data=dataForCourses,headers=headersForCourses)
+    soup = BeautifulSoup(r.content, 'html5lib')
+    id = soup.find('input', attrs={'name': 'com.sun.faces.VIEW'})['value']
+    # print(id)
+    # temp = list(id)
+    # a = int(temp[16])
+    # temp.pop(16)
+    # temp.append(str(a))
+    # newID = str
+    # for item in temp:
+    #     newID = ''.join(temp)
+    # print(len(newID))
+    dataForCourses['com.sun.faces.VIEW'] = id
+    print(dataForCourses)  
+    r2 = s.post('https://edugate.ksu.edu.sa/ksu/ui/student/student_plan/index/forwardTakenPlanIndex.faces',data=dataForCourses,headers=headers)
+    print(r2.status_code)
+    soup = BeautifulSoup(r2.content, 'html5lib')
+    # dataForCourses['com.sun.faces.VIEW'] = soup.find('input', attrs={'name': 'com.sun.faces.VIEW'})['value']
+    # print(soup.find('input', attrs={'name': 'com.sun.faces.VIEW'})['value'])
+    s.close
+    
+    return r2.text
 
 
 
