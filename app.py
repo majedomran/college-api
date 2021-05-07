@@ -79,26 +79,55 @@ def extractYear(soup,index):
     te = str(te).split('\xa0')[0]
     return te
 def extractData(soup,index):
-    bodyDict = {}
-    table = soup.findAll('table')[index]
-    row_marker = 0
+    bodyDict = []
+    # table = soup.findAll('table')[index]
+    # row_marker = 0
+    # coursIndex = 0
+    # for row in table.find_all('tr'):
+    #     column_marker = 0
+    #     columns = row.find_all('td')
+    #     coursIndex = coursIndex+1
+    #     for column in columns:
+    #         if(column_marker == 0 and coursIndex != 0):
+    #             bodyDict['course'+str(coursIndex - 2)] = {'number': column.get_text()}
+    #             print(column.get_text())
+    #         if(column_marker == 1):
+    #             bodyDict['course'+str(coursIndex - 2)]['name'] = column.get_text()
+    #         if(column_marker == 2):
+    #             bodyDict['course'+str(coursIndex - 2)]['hours'] = column.get_text()
+    #         if(column_marker == 3):
+    #             bodyDict['course'+str(coursIndex - 2)]['points'] = column.get_text()
+    #         if(column_marker == 4):
+    #             bodyDict['course'+str(coursIndex - 2)]['grade'] = column.get_text()
+    #         column_marker += 1
     coursIndex = 0
+    table = soup.findAll('table')[index]
+    i = -1
     for row in table.find_all('tr'):
         column_marker = 0
         columns = row.find_all('td')
         coursIndex = coursIndex+1
+        # term = []
+        bodyDict.append({})
+        
         for column in columns:
+
+            print('i:',i)
             if(column_marker == 0 and coursIndex != 0):
-                bodyDict['course'+str(coursIndex - 2)] = {'number': column.get_text()}
+                   bodyDict[i]['sympol'] = column.get_text()
             if(column_marker == 1):
-                bodyDict['course'+str(coursIndex - 2)]['name'] = column.get_text()
+                bodyDict[i]['name'] = column.get_text()
             if(column_marker == 2):
-                bodyDict['course'+str(coursIndex - 2)]['hours'] = column.get_text()
+                bodyDict[i]['hours'] = column.get_text()
             if(column_marker == 3):
-                bodyDict['course'+str(coursIndex - 2)]['points'] = column.get_text()
+                bodyDict[i]['points'] = column.get_text()
             if(column_marker == 4):
-                bodyDict['course'+str(coursIndex - 2)]['grade'] = column.get_text()
+                bodyDict[i]['grade'] = column.get_text()
             column_marker += 1
+
+        i += 1
+    bodyDict.pop()
+    print(bodyDict)      
     return bodyDict
     # print(bodyDict)
 def extractName(page):
@@ -180,7 +209,8 @@ def getAllData():
     s.close()
     
     return personlPage
-
+# def gpaToTermChart():
+    
 @app.route('/', methods=['POST'])
 def index():
     s = requests.session()
@@ -191,26 +221,32 @@ def index():
     data['loginForm:username'] = request.form['loginForm:username']
     data['loginForm:password'] = request.form['loginForm:password']
     r = s.post(url, data=data,headers=headers)
+    print('aquring access')
     page = s.get(
         'https://edugate.ksu.edu.sa/ksu/ui/student/student_transcript/index/studentTranscriptAllIndex.faces')
-    print(page.text)
+    # print(page.text)
     soup = BeautifulSoup(page.content, 'html5lib')
     print(request.form['loginForm:username'])
     print(request.form['loginForm:password'])
     
     bodyDict = {}
     tables = soup.findAll('table')
-    
+    print('getting data')
     personlPage = s.get('https://edugate.ksu.edu.sa/ksu/ui/student/homeIndex.faces')
     i = 28 
-    term = 0
+    # term = 0
+    # while i < len(tables) - 6:
+    #     bodyDict['term'+str(term)] = {extractYear(soup,i): extractData(soup,i+3)}
+    #     i = i + 8 
+    #     term = term +1
+    # i = 28
+    terms = []
     while i < len(tables) - 6:
-        bodyDict['term'+str(term)] = {extractYear(soup,i): extractData(soup,i+3)}
+        terms.append( {extractYear(soup,i): extractData(soup,i+3)})
         i = i + 8 
-        term = term +1
-    i = 0
+    print(terms)
     finalDict = {}
-    finalDict['data'] = bodyDict
+    finalDict['data'] = terms
     finalDict['name'] = extractName(s.get('https://edugate.ksu.edu.sa/ksu/ui/student/homeIndex.faces'))
     finalDict['college'] = extractCollege(personlPage)
     finalDict['major'] = extractMajor(personlPage)
@@ -219,7 +255,6 @@ def index():
     finalDict['warnings'] = extractWarnings(personlPage)
     finalDict['email'] = extractMail(personlPage)
     finalDict['gdp'] = extractCurrrentGDP(personlPage)
-    
     if finalDict['data']:
         finalDict['login'] = 'true'
     else:
