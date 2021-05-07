@@ -163,6 +163,24 @@ def extractCurrrentGDP(page):
     tableData = str(tableData).split('</li>')[0]
     current = str(tableData).split(' ')[17]
     return current
+def getAllData():
+    s = requests.session()
+    r1 = s.get('https://edugate.ksu.edu.sa/ksu/init')
+    soup = BeautifulSoup(r1.content, 'html5lib')
+    data['com.sun.faces.VIEW'] = soup.find(
+        'input', attrs={'name': 'com.sun.faces.VIEW'})['value']
+    data['loginForm:username'] = request.form['loginForm:username']
+    data['loginForm:password'] = request.form['loginForm:password']
+    r = s.post(url, data=data,headers=headers)
+    page = s.get(
+        'https://edugate.ksu.edu.sa/ksu/ui/student/student_transcript/index/studentTranscriptAllIndex.faces')
+    print(request.form['loginForm:username'])
+    print(request.form['loginForm:password'])
+    personlPage = s.get('https://edugate.ksu.edu.sa/ksu/ui/student/homeIndex.faces')
+    s.close()
+    
+    return personlPage
+
 @app.route('/', methods=['POST'])
 def index():
     s = requests.session()
@@ -201,7 +219,7 @@ def index():
     finalDict['warnings'] = extractWarnings(personlPage)
     finalDict['email'] = extractMail(personlPage)
     finalDict['gdp'] = extractCurrrentGDP(personlPage)
-  
+    
     if finalDict['data']:
         finalDict['login'] = 'true'
     else:
@@ -209,8 +227,31 @@ def index():
     
     
     return finalDict
-
-
+@app.route('/gpa',methods=['POST'])
+def getGpa():
+    allData = getAllData()
+    gpa = extractCurrrentGDP(allData)
+    return gpa
+@app.route('/email',methods=['POST'])
+def getEmail():
+    allData = getAllData()
+    email = extractMail(allData)
+    return email
+@app.route('/currentTerm',methods=['POST'])
+def getCurrentTerm():
+    allData = getAllData()
+    currentTerm = extractCurrentTerm(allData)
+    return currentTerm
+@app.route('/major',methods=['POST'])
+def getMajor():
+    allData = getAllData()
+    major = extractMajor(allData)
+    return major
+@app.route('/college',methods=['POST'])
+def getCollege():
+    allData = getAllData()
+    college = extractCollege(allData)
+    return college
 
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
