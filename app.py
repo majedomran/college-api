@@ -175,6 +175,7 @@ def index():
     r = s.post(url, data=data,headers=headers)
     page = s.get(
         'https://edugate.ksu.edu.sa/ksu/ui/student/student_transcript/index/studentTranscriptAllIndex.faces')
+    print(page.text)
     soup = BeautifulSoup(page.content, 'html5lib')
     print(request.form['loginForm:username'])
     print(request.form['loginForm:password'])
@@ -200,41 +201,14 @@ def index():
     finalDict['warnings'] = extractWarnings(personlPage)
     finalDict['email'] = extractMail(personlPage)
     finalDict['gdp'] = extractCurrrentGDP(personlPage)
-    # print(finalDict['data'])
+  
     if finalDict['data']:
         finalDict['login'] = 'true'
     else:
         finalDict['login'] = 'false'    
     
     
-    # print(finalDict)
-    ##################
-    r = s.get('https://edugate.ksu.edu.sa/ksu/ui/student/student_transcript/index/studentTranscriptAllIndex.faces')
-    # soup = BeautifulSoup(r.content, 'html5lib')
-    # dataForCourses['com.sun.faces.VIEW'] = soup.find('input', attrs={'name': 'com.sun.faces.VIEW'})['value']
-    # print(soup.find('input', attrs={'name': 'com.sun.faces.VIEW'})['value'])
-    # r = s.post('https://edugate.ksu.edu.sa/ksu/ui/student/student_transcript/index/studentTranscriptAllIndex.faces',data=dataForCourses,headers=headersForCourses)
-    soup = BeautifulSoup(r.content, 'html5lib')
-    id = soup.find('input', attrs={'name': 'com.sun.faces.VIEW'})['value']
-    # print(id)
-    # temp = list(id)
-    # a = int(temp[16])
-    # temp.pop(16)
-    # temp.append(str(a))
-    # newID = str
-    # for item in temp:
-    #     newID = ''.join(temp)
-    # print(len(newID))
-    dataForCourses['com.sun.faces.VIEW'] = id
-    print(dataForCourses)  
-    r2 = s.post('https://edugate.ksu.edu.sa/ksu/ui/student/student_plan/index/forwardTakenPlanIndex.faces',data=dataForCourses,headers=headers)
-    print(r2.status_code)
-    soup = BeautifulSoup(r2.content, 'html5lib')
-    # dataForCourses['com.sun.faces.VIEW'] = soup.find('input', attrs={'name': 'com.sun.faces.VIEW'})['value']
-    # print(soup.find('input', attrs={'name': 'com.sun.faces.VIEW'})['value'])
-    s.close
-    
-    return r2.text
+    return finalDict
 
 
 
